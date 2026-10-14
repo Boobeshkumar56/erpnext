@@ -268,7 +268,7 @@ class Asset(AccountsController):
 		if self.calculate_depreciation and not self.split_from:
 			convert_draft_asset_depr_schedules_into_active(self)
 		self.set_status()
-		add_asset_activity(self.name, _("Asset submitted"))
+		add_asset_activity(self.name, _("Asset submitted"), self.company)
 
 	def on_cancel(self):
 		self.validate_cancellation()
@@ -281,7 +281,7 @@ class Asset(AccountsController):
 		if self.asset_type != "Composite Component":
 			make_reverse_gl_entries(voucher_type="Asset", voucher_no=self.name)
 			self.db_set("booked_fixed_asset", 0)
-		add_asset_activity(self.name, _("Asset cancelled"))
+		add_asset_activity(self.name, _("Asset cancelled"), self.company)
 
 	def after_insert(self):
 		if not frappe.db.exists(
@@ -290,10 +290,10 @@ class Asset(AccountsController):
 				"asset": self.name,
 			}
 		):
-			add_asset_activity(self.name, _("Asset created"))
+			add_asset_activity(self.name, _("Asset created"), self.company)
 
 	def after_delete(self):
-		add_asset_activity(self.name, _("Asset deleted"))
+		add_asset_activity(self.name, _("Asset deleted"), self.company)
 
 	def set_purchase_doc_row_item(self):
 		if self.asset_type == "Existing Asset" or self.asset_type == "Composite Asset":

@@ -24,11 +24,14 @@ class AssetActivity(Document):
 	pass
 
 
-def add_asset_activity(asset, subject):
+def add_asset_activity(asset, subject, company=None):
+	if not company and asset:
+		company = frappe.db.get_value("Asset", asset, "company")
 	frappe.get_doc(
 		{
 			"doctype": "Asset Activity",
 			"asset": asset,
+			"company": company,
 			"subject": subject,
 			"user": frappe.session.user,
 			"date": now_datetime(),
